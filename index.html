@@ -1,18 +1,135 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Ban Social</title>
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <title>By Ban Social</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no" />
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: black;
+      overflow: hidden;
+      height: 100vh;
+      width: 100vw;
+      font-family: sans-serif;
+    }
+
+    canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 0;
+    }
+
+    .text-box {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0);
+      font-size: 3.5em;
+      font-weight: 900;
+      color: white;
+      text-shadow:
+        0 0 5px #fff,
+        0 0 10px #f0f,
+        0 0 15px #f0f,
+        0 0 20px #0ff;
+      white-space: nowrap;
+      z-index: 2;
+      animation: pop-in 1s ease-out forwards;
+    }
+
+    @keyframes pop-in {
+      to {
+        transform: translate(-50%, -50%) scale(1);
+      }
+    }
+
+    .heart {
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      background: pink;
+      transform: rotate(45deg);
+      animation: fall 3s linear forwards;
+    }
+
+    .heart::before,
+    .heart::after {
+      content: "";
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      background: pink;
+      border-radius: 50%;
+    }
+
+    .heart::before {
+      top: -10px;
+      left: 0;
+    }
+
+    .heart::after {
+      top: 0;
+      left: -10px;
+    }
+
+    @keyframes fall {
+      0% {
+        top: 0;
+        opacity: 1;
+      }
+      100% {
+        top: 100vh;
+        opacity: 0;
+      }
+    }
+  </style>
 </head>
 <body>
   <canvas id="matrix"></canvas>
+  <div class="text-box">Ban Social</div>
 
-  <div class="center-text">Ban Social</div>
+  <script>
+    const canvas = document.getElementById("matrix");
+    const ctx = canvas.getContext("2d");
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
 
-  <button id="music-btn">Phát nhạc 🎵</button>
-  <audio id="bg-music" src="music.mp3" loop></audio>
+    const chars = "01#@*XアァイィウエカガキギクグケゲコゴサザABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    const fontSize = 16;
+    const columns = Math.floor(canvas.width / fontSize);
+    const drops = Array(columns).fill(1);
 
-  <script src="script.js"></script>
+    function drawMatrix() {
+      ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      ctx.fillStyle = "#0FF";
+      ctx.font = fontSize + "px monospace";
+
+      drops.forEach((y, x) => {
+        const text = chars[Math.floor(Math.random() * chars.length)];
+        ctx.fillText(text, x * fontSize, y * fontSize);
+
+        if (y * fontSize > canvas.height && Math.random() > 0.975) {
+          drops[x] = 0;
+        }
+        drops[x]++;
+      });
+    }
+    setInterval(drawMatrix, 33);
+
+    // Tạo hiệu ứng trái tim rơi khi chạm
+    document.addEventListener("click", (e) => {
+      const heart = document.createElement("div");
+      heart.className = "heart";
+      heart.style.left = e.clientX + "px";
+      heart.style.top = e.clientY + "px";
+      document.body.appendChild(heart);
+      setTimeout(() => heart.remove(), 3000);
+    });
+  </script>
 </body>
 </html>
